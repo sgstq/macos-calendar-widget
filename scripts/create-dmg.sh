@@ -2,7 +2,7 @@
 set -euo pipefail
 
 if [ "$#" -ne 2 ]; then
-  echo "usage: $0 /path/to/CalendarWidget.app /path/to/CalendarWidget.dmg" >&2
+  echo "usage: $0 '/path/to/Calendar Widget.app' /path/to/CalendarWidget.dmg" >&2
   exit 64
 fi
 

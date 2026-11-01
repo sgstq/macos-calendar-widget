@@ -9,8 +9,9 @@ enum WidgetStore {
     private static let monthOffsetKey = "monthOffset"
 
     /// Number of months away from the current month being displayed (0 = today's month).
+    /// Clamped so repeated clicks can never page into a range the calendar can't represent.
     static var monthOffset: Int {
-        get { defaults.integer(forKey: monthOffsetKey) }
-        set { defaults.set(newValue, forKey: monthOffsetKey) }
+        get { MonthGrid.clampedOffset(defaults.integer(forKey: monthOffsetKey)) }
+        set { defaults.set(MonthGrid.clampedOffset(newValue), forKey: monthOffsetKey) }
     }
 }

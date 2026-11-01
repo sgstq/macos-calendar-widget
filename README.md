@@ -14,7 +14,7 @@ The widget stays quiet and lightweight. Today is clearly marked, adjacent-month 
 - Fast month navigation with arrows or broad left/right calendar zones
 - Year jumps with compact double-arrow controls
 - One-click return to the current month
-- Clean native macOS look in Medium and Large sizes
+- Native Liquid Glass look on macOS 26 and later, in Medium and Large sizes
 - Locale-aware weekday order
 
 ## Get Calendar Widget
@@ -26,3 +26,11 @@ Download the latest DMG from [GitHub Releases](https://github.com/sgstq/macos-ca
 ## Development
 
 Built with SwiftUI + WidgetKit and generated from `project.yml` via [XcodeGen](https://github.com/yonaskolb/XcodeGen). Releases are built and packaged by [`.github/workflows/release.yml`](.github/workflows/release.yml); see [docs/ci-signing.md](docs/ci-signing.md) for the code-signing setup.
+
+```sh
+xcodegen generate
+xcodebuild -project CalendarWidget.xcodeproj -scheme CalendarWidget -configuration Release \
+  -derivedDataPath build/DerivedData CODE_SIGN_IDENTITY="-" build
+```
+
+The app icon is rendered by `scripts/generate-app-icon.swift` into `App/Assets.xcassets`; re-run it only when the icon design changes.

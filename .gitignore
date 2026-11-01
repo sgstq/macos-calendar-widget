@@ -6,6 +6,7 @@ DerivedData/
 
 # XcodeGen-generated (regenerate with `xcodegen generate`)
 *.xcodeproj/
+App/Info.plist
 Widget/Info.plist
 
 # Xcode user state
