@@ -104,6 +104,7 @@ jobs:
 
           {
             echo "tag=${next_tag}"
+            echo "version=${next_tag#v}"
             echo "dmg_path=dist/CalendarWidget-${next_tag}.dmg"
           } >> "$GITHUB_OUTPUT"
 
@@ -135,13 +136,15 @@ jobs:
             -configuration Release \
             -derivedDataPath build \
             CODE_SIGN_IDENTITY="-" \
+            MARKETING_VERSION="${{ steps.release.outputs.version }}" \
+            CURRENT_PROJECT_VERSION="${{ github.run_number }}" \
             build
 
       - name: Sign app
         if: steps.signing.outputs.enabled == 'true'
         run: |
           set -euo pipefail
-          app="build/Build/Products/Release/CalendarWidget.app"
+          app="build/Build/Products/Release/Calendar Widget.app"
           ext="$app/Contents/PlugIns/MonthWidgetExtension.appex"
 
           # Sign the embedded widget extension first, then the app itself,
@@ -159,7 +162,7 @@ jobs:
       - name: Create DMG
         run: |
           ./scripts/create-dmg.sh \
-            build/Build/Products/Release/CalendarWidget.app \
+            "build/Build/Products/Release/Calendar Widget.app" \
             "${{ steps.release.outputs.dmg_path }}"
 
       - name: Sign DMG

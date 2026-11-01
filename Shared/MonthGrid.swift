@@ -7,13 +7,21 @@ struct DayCell: Identifiable, Hashable {
     let day: Int
     let isInCurrentMonth: Bool
     let isToday: Bool
+    let isWeekend: Bool
 }
 
 /// Pure date math for rendering a month view. No state, no UI.
 enum MonthGrid {
     private static var calendar: Calendar { Calendar.current }
 
-    /// First day of the month that is `offset` months from the current month.
+    /// How far from the current month the widget may be paged (±100 years).
+    static let maxOffset = 12 * 100
+
+    static func clampedOffset(_ offset: Int) -> Int {
+        min(max(offset, -maxOffset), maxOffset)
+    }
+
+    /// First day of the month that is `offset` months from the month containing `now`.
     static func month(forOffset offset: Int, now: Date = Date()) -> Date {
         let cal = calendar
         let startOfThisMonth = cal.date(from: cal.dateComponents([.year, .month], from: now)) ?? now
@@ -38,6 +46,8 @@ enum MonthGrid {
     }
 
     /// 42 cells (6 weeks) covering the given month, padded with adjacent days.
+    /// `now` decides which cell is "today" so entries can be precomputed for a
+    /// future date (e.g. the midnight rollover).
     static func cells(for month: Date, now: Date = Date()) -> [DayCell] {
         let cal = calendar
         let comps = cal.dateComponents([.year, .month], from: month)
@@ -56,7 +66,8 @@ enum MonthGrid {
                 date: date,
                 day: cal.component(.day, from: date),
                 isInCurrentMonth: cal.isDate(date, equalTo: firstOfMonth, toGranularity: .month),
-                isToday: cal.isDateInToday(date)
+                isToday: cal.isDate(date, inSameDayAs: now),
+                isWeekend: cal.isDateInWeekend(date)
             ))
         }
         return result

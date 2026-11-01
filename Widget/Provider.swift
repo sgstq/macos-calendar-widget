@@ -10,14 +10,15 @@ struct MonthEntry: TimelineEntry {
 }
 
 struct Provider: TimelineProvider {
-    private func makeEntry() -> MonthEntry {
+    /// Build the entry as it should look at `now` for the stored month offset.
+    private func makeEntry(at now: Date = Date()) -> MonthEntry {
         let offset = WidgetStore.monthOffset
-        let monthStart = MonthGrid.month(forOffset: offset)
+        let monthStart = MonthGrid.month(forOffset: offset, now: now)
         return MonthEntry(
-            date: Date(),
+            date: now,
             title: MonthGrid.title(for: monthStart),
             weekdays: MonthGrid.weekdaySymbols(),
-            cells: MonthGrid.cells(for: monthStart),
+            cells: MonthGrid.cells(for: monthStart, now: now),
             isCurrentMonth: offset == 0
         )
     }
@@ -29,14 +30,18 @@ struct Provider: TimelineProvider {
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<MonthEntry>) -> Void) {
-        let entry = makeEntry()
-        // Refresh after midnight so the "today" highlight stays accurate.
+        let now = Date()
         let cal = Calendar.current
         let nextMidnight = cal.nextDate(
-            after: Date(),
+            after: now,
             matching: DateComponents(hour: 0, minute: 0, second: 0),
             matchingPolicy: .nextTime
-        ) ?? Date().addingTimeInterval(60 * 60)
-        completion(Timeline(entries: [entry], policy: .after(nextMidnight)))
+        ) ?? now.addingTimeInterval(60 * 60)
+
+        // Two entries: the current view, and a precomputed one for midnight so the
+        // "today" marker moves on time even if WidgetKit delays the reload.
+        // Keep the current month offset (relative to the new "now") the same.
+        let entries = [makeEntry(at: now), makeEntry(at: nextMidnight)]
+        completion(Timeline(entries: entries, policy: .after(nextMidnight)))
     }
 }

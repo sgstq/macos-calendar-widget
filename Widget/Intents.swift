@@ -4,7 +4,9 @@ import AppIntents
 /// Runs in the widget extension; after `perform` returns, WidgetKit reloads the
 /// timeline (interaction-initiated reloads are guaranteed), so the grid updates.
 struct ShiftMonthIntent: AppIntent {
-    static var title: LocalizedStringResource = "Change Month"
+    static let title: LocalizedStringResource = "Change Month"
+    /// Widget-only: keep it out of Shortcuts and Spotlight.
+    static let isDiscoverable = false
 
     @Parameter(title: "Delta")
     var delta: Int
@@ -20,7 +22,8 @@ struct ShiftMonthIntent: AppIntent {
 
 /// Jump back to the current month.
 struct GoToTodayIntent: AppIntent {
-    static var title: LocalizedStringResource = "Go to Today"
+    static let title: LocalizedStringResource = "Go to Today"
+    static let isDiscoverable = false
 
     func perform() async throws -> some IntentResult {
         WidgetStore.monthOffset = 0
