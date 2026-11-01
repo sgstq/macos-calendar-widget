@@ -30,7 +30,12 @@ Built with SwiftUI + WidgetKit and generated from `project.yml` via [XcodeGen](h
 ```sh
 xcodegen generate
 xcodebuild -project CalendarWidget.xcodeproj -scheme CalendarWidget -configuration Release \
-  -derivedDataPath build/DerivedData CODE_SIGN_IDENTITY="-" build
+  -derivedDataPath build/DerivedData CODE_SIGN_IDENTITY="-" \
+  CURRENT_PROJECT_VERSION="$(date -u +%Y%m%d%H%M)" build
 ```
+
+To try a build on your own Mac, copy `build/DerivedData/Build/Products/Release/Calendar Widget.app` to `/Applications`, open it once, then restart the widget host with `killall chronod NotificationCenter`.
+
+Always pass a build number (`CURRENT_PROJECT_VERSION`) higher than the one already installed, as above. If it goes down, Notification Center keeps the stored timeline of the higher-numbered build and the widget's buttons appear to stop working. Releases use the same timestamp scheme.
 
 The app icon is rendered by `scripts/generate-app-icon.swift` into `App/Assets.xcassets`; re-run it only when the icon design changes.

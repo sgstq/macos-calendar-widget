@@ -22,9 +22,23 @@ struct ContentView: View {
             Text("You can quit this app — the widget keeps working on its own.")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
+
+            Text("Version \(Self.versionString)")
+                .font(.caption)
+                .foregroundStyle(.tertiary)
+                .textSelection(.enabled)
         }
         .padding(28)
         .frame(width: 460)
+    }
+
+    /// "0.1.4 (202611011219)": marketing version plus build number, both read
+    /// from Info.plist so the window always matches what is installed.
+    static var versionString: String {
+        let info = Bundle.main.infoDictionary
+        let short = info?["CFBundleShortVersionString"] as? String ?? "?"
+        let build = info?["CFBundleVersion"] as? String ?? "?"
+        return "\(short) (\(build))"
     }
 
     private func row(_ symbol: String, _ text: String) -> some View {
@@ -32,6 +46,7 @@ struct ContentView: View {
             Image(systemName: symbol)
                 .foregroundStyle(.tint)
             Text(text)
+                .fixedSize(horizontal: false, vertical: true)
             Spacer(minLength: 0)
         }
         .font(.callout)

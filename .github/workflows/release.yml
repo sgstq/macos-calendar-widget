@@ -129,6 +129,10 @@ jobs:
         run: xcodegen generate
 
       - name: Build app
+        # CFBundleVersion must never go down between installs: Notification
+        # Center keeps serving the stored timeline of a higher-numbered build
+        # and the widget's buttons stop visibly working. A UTC timestamp is
+        # larger than any earlier release or local build.
         run: |
           xcodebuild \
             -project CalendarWidget.xcodeproj \
@@ -137,7 +141,7 @@ jobs:
             -derivedDataPath build \
             CODE_SIGN_IDENTITY="-" \
             MARKETING_VERSION="${{ steps.release.outputs.version }}" \
-            CURRENT_PROJECT_VERSION="${{ github.run_number }}" \
+            CURRENT_PROJECT_VERSION="$(date -u +%Y%m%d%H%M)" \
             build
 
       - name: Sign app
